@@ -68,11 +68,13 @@ class GridWorld():
         self.run = False
     def loop(self):
         do = True
+        self.run = not self.run
         while True:
             if self.draw_grid:
                 self.draw()
             self.clock.tick(60)
-            self.mpos = pygame.mouse.get_pos()
+            if self.draw_grid:
+                self.mpos = pygame.mouse.get_pos()
             if self.run:
                 if self.agent.finished:
                     self.agent.show_result()
@@ -83,22 +85,24 @@ class GridWorld():
                     self.run = False
                 else:
                     self.agent.make_step()
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
+            if self.draw_grid:
+                for event in pygame.event.get():
+                    if event.type == QUIT:
                         pygame.quit()
                         sys.exit()
-                    if event.key == K_RETURN:
-                        self.run = not self.run
-                    if event.key == K_c:
-                        self.new_grid()
-                    if event.key == K_2:
-                        self.grid.clear_path()
-                        self.type = "bfs"
-                        self.agent.new_plan(self.type)
+                    if event.type == KEYDOWN:
+                        if event.key == K_ESCAPE:
+                            pygame.quit()
+                            sys.exit()
+                        if event.key == K_RETURN:
+                            self.run = not self.run
+                        if event.key == K_c:
+                            self.new_grid()
+                        if event.key == K_2:
+                            self.grid.clear_path()
+                            self.type = "bfs"
+                            self.agent.new_plan(self.type)
+                
 #                    if event.key == K_4:
 #                        self.grid.clear_path()
 #                        self.type = "astar"
