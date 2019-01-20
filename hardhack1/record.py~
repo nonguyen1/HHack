@@ -1,0 +1,8 @@
+import sounddevice as sd
+import numpy as np
+
+sd.default.channels = 2
+fs = 44100
+duration = 10.5  # seconds
+myrecording = sd.rec(int(duration * fs), samplerate=fs,blocking=True)
+print(myrecording)
