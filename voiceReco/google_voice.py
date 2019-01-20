@@ -3,14 +3,14 @@ import numpy as np
 
 
 # XXX: Try to simplify audio samples. Don't allow items that are two words
-CLASSES = ['pasta', 'milk', 'soda', 'candy']
+CLASSES = ['pasta', 'milk', 'soda', 'candy', 'bread']
 
 
 class Google_Audio():
 
-    def __init__(self):
+    def __init__(self, classes=CLASSES):
         self.r = sr.Recognizer()
-        self.classes = CLASSES
+        self.classes = classes
 
     def identify(self, audio):
         ''' Determine which item to search for '''

@@ -1,9 +1,4 @@
 
-'''
-Main driver for gridworld game board.
-All code provided by Winter 2019, CSE 150 course.
-'''
-
 import pygame
 import random
 import sys
@@ -14,8 +9,10 @@ from methods import *
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 82, 33)
-GREY = (220, 220, 220)
-DARKGREY = (128, 128, 128)
+GREY = (0, 0, 0)
+#GREY = (220, 220, 220)
+DARKGREY = (0, 0, 0)
+#DARKGREY = (128, 128, 128)
 GREENGREY = (125, 164, 120)
 RED = (160, 27, 16)
 REDGREY = (182, 128, 109)
@@ -37,60 +34,75 @@ NODE_WIDTH = 100
 NODE_HEIGHT = 100
 
 class GridWorld():
-    def __init__(self):
+    def __init__(self, draw_grid=True, in_bot=False):
         pygame.init()
         pygame.display.set_caption("Grid World")
+        self.in_bot = in_bot
+        self.draw_grid = draw_grid
         self.clock = pygame.time.Clock()
         self.last_tick = pygame.time.get_ticks()
         self.screen_res = [SCREEN_RES_X, SCREEN_RES_Y]
         self.font = pygame.font.SysFont("Calibri", 16)
-        self.screen = pygame.display.set_mode(self.screen_res, pygame.HWSURFACE, 32)
+        if self.draw_grid:
+            self.screen = pygame.display.set_mode(self.screen_res, pygame.HWSURFACE, 32)
         self.show_checked = True
         self.quit = False
         self.type = "bfs"
         self.grid = None
         self.new_grid()
-    def new_grid(self):
+        self.commands = []
+
+    def new_grid(self, goal=None):
         saved_start = None
         if self.grid:
             print("Saved start")
             saved_start = self.grid.start
 
         self.grid = Grid(self)
+        if goal:
+            self.grid.goal = goal
         if saved_start:
             self.grid.start = saved_start
         self.agent = Agent(self.grid, self.grid.start, self.grid.goal, self.type)
         self.grid.set_aisle()
         self.run = False
     def loop(self):
+        do = True
+        self.run = not self.run
         while True:
-            self.draw()
+            if self.draw_grid:
+                self.draw()
             self.clock.tick(60)
-            self.mpos = pygame.mouse.get_pos()
+            if self.draw_grid:
+                self.mpos = pygame.mouse.get_pos()
             if self.run:
                 if self.agent.finished:
                     self.agent.show_result()
                     self.run = False
+                    if self.in_bot:
+                        return self.grid.commands
                 elif self.agent.failed:
                     self.run = False
                 else:
                     self.agent.make_step()
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
+            if self.draw_grid:
+                for event in pygame.event.get():
+                    if event.type == QUIT:
                         pygame.quit()
                         sys.exit()
-                    if event.key == K_RETURN:
-                        self.run = not self.run
-                    if event.key == K_c:
-                        self.new_grid()
-                    if event.key == K_2:
-                        self.grid.clear_path()
-                        self.type = "bfs"
-                        self.agent.new_plan(self.type)
+                    if event.type == KEYDOWN:
+                        if event.key == K_ESCAPE:
+                            pygame.quit()
+                            sys.exit()
+                        if event.key == K_RETURN:
+                            self.run = not self.run
+                        if event.key == K_c:
+                            self.new_grid()
+                        if event.key == K_2:
+                            self.grid.clear_path()
+                            self.type = "bfs"
+                            self.agent.new_plan(self.type)
+                
 #                    if event.key == K_4:
 #                        self.grid.clear_path()
 #                        self.type = "astar"
