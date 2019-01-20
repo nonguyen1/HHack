@@ -1,3 +1,7 @@
+#include <Wire.h>
+#define SLAVE_ADDRESS 0x04
+
+
 #define MOTOR_A_CONTROL_1 5
 #define MOTOR_A_CONTROL_2 6
 #define MOTOR_B_CONTROL_1 7
@@ -18,7 +22,8 @@
 #define ENTOUR_ERROR_MULTIPLIER 0.1
 #define ENTOUR_ERROR_CORRECTION_TOLERANCE_PERCENTAGE 5
 
-#define TURN_NINTY_POWER 16
+#define TURN_NINTY_DISTANCE 16
+#define FORWARD_BLOCK_DISTANCE 16
 
 volatile int aCurrentPos = 0;
 volatile int bCurrentPos = 0;
@@ -30,6 +35,12 @@ int distance = 0; // Distance to travel
 
 void setup() {
   Serial.begin(115200);
+  // I2C
+  Wire.begin(SLAVE_ADDRESS); // Init I2C
+  // Attach cb
+  Wire.onReceive(receiveData);
+
+
   // Motor Driver TB6612FNG
   pinMode(MOTOR_A_CONTROL_1, OUTPUT);
   pinMode(MOTOR_A_CONTROL_2, OUTPUT);
@@ -50,10 +61,10 @@ void setMotorDirectionSpeed(int deltaA, int deltaB, int speedA, int speedB);
 
 
 void loop() {
-  //  movementHandle();
-  moveTo(TURN_NINTY_POWER, -TURN_NINTY_POWER);
-  setMotorSpeed(0, 0);
-  while (1);
+  movementHandle();
+  //  moveTo(TURN_NINTY_POWER, -TURN_NINTY_POWER);
+  //  setMotorSpeed(0, 0);
+  //  while (1);
 }
 
 void testDrive() {
@@ -178,7 +189,26 @@ void encoderBISR ()
 // Searches for command from I2C, and respond to it
 void movementHandle() {
   if (direct != 'N') {
-    //    switch direch
+    if (direct == 'F') {
+      moveTo(distance, distance);
+      setMotorSpeed(0, 0);
+      direct = 'N';
+    }
+    else if (direct == 'B') {
+      moveTo(-distance, -distance);
+      setMotorSpeed(0, 0);
+      direct = 'N';
+    }
+    else if (direct == 'L') {
+      moveTo(-distance, distance);
+      setMotorSpeed(0, 0);
+      direct = 'N';
+    }
+    else if (direct == 'R') {
+      moveTo(distance, -distance);
+      setMotorSpeed(0, 0);
+      direct = 'N';
+    }
   }
 }
 
@@ -248,13 +278,13 @@ void moveTo(int aTargetPos, int bTargetPos) {
   while (true) {
     int deltaA = aTargetPos - aCurrentPos;
     int deltaB = bTargetPos - bCurrentPos;
-//    Serial.print("aTarget=");  Serial.print(aTargetPos); Serial.print("|"); Serial.print(bTargetPos);
-//    Serial.print("|*curr*"); Serial.print(aCurrentPos); Serial.print("|"); Serial.print(bCurrentPos);
-//    Serial.print("delta="); Serial.print(deltaA); Serial.print("|"); Serial.println(deltaB);
+    //    Serial.print("aTarget=");  Serial.print(aTargetPos); Serial.print("|"); Serial.print(bTargetPos);
+    //    Serial.print("|*curr*"); Serial.print(aCurrentPos); Serial.print("|"); Serial.print(bCurrentPos);
+    //    Serial.print("delta="); Serial.print(deltaA); Serial.print("|"); Serial.println(deltaB);
     int currentBaseSpeed = roughSpeed(aTargetPos, bTargetPos);
     setMotorDirectionSpeed(deltaA, deltaB, currentBaseSpeed, currentBaseSpeed);
-//    Serial.println(abs(deltaA));
-//    Serial.println(abs(deltaA) > 5);
+    //    Serial.println(abs(deltaA));
+    //    Serial.println(abs(deltaA) > 5);
     if (abs(deltaA) <= 5)
       break;
   }
@@ -298,4 +328,20 @@ void setMotorDirectionSpeed(int deltaA, int deltaB, int speedA, int speedB) {
     setMotorSpeed(0, 0);
   else if (deltaA <= 0 && deltaB <= 0)
     setMotorSpeed(-speedA, speedB);
+}
+
+/*
+   @brief I2C communication receive data event callback
+*/
+void receiveData(int byteCount) {
+  static int dirRead;
+  while (Wire.available()) {
+    dirRead = Wire.read();
+    distance = Wire.read();
+  }
+  direct = (char)dirRead;
+  Serial.print("Received: ");
+  Serial.print(dirRead);
+  Serial.println(distance);
+
 }
