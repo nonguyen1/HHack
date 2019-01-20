@@ -16,11 +16,12 @@
 
 volatile int aCount = 0;
 volatile int bCount = 0;
-bool isAForward = true;
-bool isBForward = false;
+volatile bool isAForward = true;
+volatile bool isBForward = true;
 
 
 void setup() {
+  Serial.begin(115200);
   // Motor Driver TB6612FNG
   pinMode(MOTOR_A_CONTROL_1, OUTPUT);
   pinMode(MOTOR_A_CONTROL_2, OUTPUT);
@@ -37,13 +38,15 @@ void setup() {
 }
 
 void loop() {
-  //  motorSpeed(MOTOR_SPEED_SLOW, MOTOR_SPEED_SLOW);
-  //  testDrive();
-  //  motorSpeed(MOTOR_SPEED_MEDIUM, MOTOR_SPEED_MEDIUM);
-  //  testDrive();
-  //  motorSpeed(MOTOR_SPEED_FAST, MOTOR_SPEED_FAST);
-  //  testDrive();
-  //  while (1);
+  motorSpeed(100, 100);
+  backward();
+  delay(2000);
+  shortBreak();
+  //    motorSpeed(MOTOR_SPEED_MEDIUM, MOTOR_SPEED_MEDIUM);
+  //    testDrive();
+  //  //  motorSpeed(MOTOR_SPEED_FAST, MOTOR_SPEED_FAST);
+  //  //  testDrive();
+  while (1);
 }
 
 void testDrive() {
@@ -127,6 +130,9 @@ void encoderACB ()
   else {
     aCount--;
   }
+  Serial.print(aCount);
+  Serial.print("\t");
+  Serial.println(bCount);
 }
 
 // Interrupt Service Routine for a change to encoder pin B
@@ -138,4 +144,7 @@ void encoderBCB ()
   else {
     bCount--;
   }
+  Serial.print(aCount);
+  Serial.print("\t");
+  Serial.println(bCount);
 }
