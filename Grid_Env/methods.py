@@ -51,9 +51,6 @@ class Agent:
             print(command)
             current = self.previous[current]
             self.grid.nodes[current].in_path = True #This turns the color of the node to red
-        if self.final_cost is not None:
-            print("final cost:", self.final_cost)
-        print(" --- ")
         self.grid.start = self.goal
 
     def find_action(self, s_node, e_node):
