@@ -8,9 +8,9 @@ CLASSES = ['pasta', 'milk', 'soda', 'candy']
 
 class Google_Audio():
 
-    def __init__(self):
+    def __init__(self, classes=CLASSES):
         self.r = sr.Recognizer()
-        self.classes = CLASSES
+        self.classes = classes
 
     def identify(self, audio):
         ''' Determine which item to search for '''
