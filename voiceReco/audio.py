@@ -12,7 +12,7 @@ FORMAT = pyaudio.paInt16 #paInt8
 CHANNELS = 1
 RATE = 48000 #sample rate
 RECORD_SECONDS = 3
-WAVE_OUTPUT_FILENAME = "wordRecorded{}.wav"
+WAVE_OUTPUT_FILENAME = "audio.wav"
 dtype = 'int{0}'.format(CHUNK)
 
 def recordWord(ct):
@@ -39,12 +39,20 @@ def recordWord(ct):
     stream.stop_stream()
     stream.close()
     p.terminate()
+    print(type(p))
 
     wf = wave.open(WAVE_OUTPUT_FILENAME.format(str(ct)), 'wb')
     wf.setnchannels(CHANNELS)
     wf.setsampwidth(p.get_sample_size(FORMAT))
     wf.setframerate(RATE)
     signal = np.hstack(framesmatrix)
+
+    sam_wid = p.get_sample_size(FORMAT)
+    sam_rate = RATE
+
+
+#    return signal, sam_wid, sam_rate
+#    print("signal", type(signal))
 
 
     # print(signal)
@@ -58,4 +66,5 @@ def recordWord(ct):
     wf.writeframes(b''.join(frames))
     wf.close()
 
-recordWord(0)
+if __name__ == "__main__":
+    recordWord(0)

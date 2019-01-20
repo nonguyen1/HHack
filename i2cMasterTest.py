@@ -1,7 +1,11 @@
 import smbus
 import time
+import WirelessTool
 
 bus = smbus.SMBus(1)
+command = WirelessTool.TCPEchoServer(3005,2)
+while(not command.connect(5)):
+    print("Waiting connection from commander")
 
 
 address = 0x04
@@ -13,11 +17,14 @@ def writeNumber(value):
     return -1
 
 while True:
-    var = input("format direction,speed: ")
-    if not var:
-        continue
-
-    writeNumber(var)
+    #var = int(input("format direction,speed: "))
+    #if not var:
+    #    continue
+    received = command.read()
+    if(received != 'Z' and received != ''):
+        print(received)
+        var = int(received)
+        writeNumber(var)
 
 
 

@@ -1,0 +1,7 @@
+import WirelessTool, socket
+
+TCPServer = WirelessTool.TCPEchoServer(3005,0.1)
+while(not TCPServer.connect(10)):
+    print("[INFO]\tWaiting User Connection")
+
+TCPServer.write('70016')
