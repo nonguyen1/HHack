@@ -11,7 +11,7 @@ from Grid_Env.gridworld import GridWorld
 
 
 
-POSITIONS = {0: (0, 1), 1: (3, 4), 2: (5,5), 3: (1, 1), 4: (5,5)}
+POSITIONS = {0: (1, 0), 1: (3, 2), 2: (2, 4), 3: (3, 0), 4: (0, 3)}
 
 
 class Robot(object):
