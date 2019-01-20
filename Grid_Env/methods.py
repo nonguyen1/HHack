@@ -48,10 +48,12 @@ class Agent:
         commands = []
         while not current == self.start:
             command = self.find_action(self.previous[current], current)
-            print(command)
+            commands.append(command)
+#            print(command)
             current = self.previous[current]
             self.grid.nodes[current].in_path = True #This turns the color of the node to red
         self.grid.start = self.goal
+        self.grid.commands = commands
 
     def find_action(self, s_node, e_node):
         x_dir = e_node[0] - s_node[0]
