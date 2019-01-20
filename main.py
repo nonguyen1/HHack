@@ -5,6 +5,8 @@ import time
 import sys
 sys.path.insert(0, "./Grid_Env")
 
+import subprocess
+
 from voiceReco.google_voice import Google_Audio
 from Grid_Env.methods import Agent
 from Grid_Env.gridworld import GridWorld
@@ -39,6 +41,23 @@ if __name__ == "__main__":
     while True:
         pos = (2,2) # TODO: Get position here.
         commands = bot.go_to_position((2,2))
+
+        for command in commands:
+            
+
+            if command == (-1,0):
+                out_command = '70050'
+            elif command == (1, 0):
+                out_command = '66050'
+            elif command == (0, 1):
+                out_command = '82050'
+            elif command == (0, -1):
+                out_command = '76050'
+
+            python3_command = "py2file.py out_command"  # launch your python2 script using bash
+
+            process = subprocess.Popen(python3_command.split(), stdout=subprocess.PIPE)
+            output, error = process.communicate()
 
         # TODO: Execute commands here.
         print(commands)
