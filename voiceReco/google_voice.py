@@ -3,7 +3,7 @@ import numpy as np
 
 
 # XXX: Try to simplify audio samples. Don't allow items that are two words
-CLASSES = ['pasta', 'milk', 'soda', 'candy']
+CLASSES = ['pasta', 'milk', 'soda', 'candy', 'bread']
 
 
 class Google_Audio():
