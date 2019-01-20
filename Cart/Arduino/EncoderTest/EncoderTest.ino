@@ -17,7 +17,7 @@ void encoderACB ()
   }
 }
 
-// Interrupt Service Routine for a change to encoder pin A
+// Interrupt Service Routine for a change to encoder pin B
 void encoderBCB ()
 {
   if (isBForward) {
